@@ -18,13 +18,13 @@ public final class AddressBook {
 
     public void remove(String person) {
         if (book.containsKey(person))
-        book.remove(person);
+            book.remove(person);
         else throw new IllegalArgumentException("This person is not in address book");
     }
 
     public void changeAddress(String person, Address newAddress) {
         if (book.containsKey(person))
-        book.replace(person, newAddress);
+            book.replace(person, newAddress);
         else throw new IllegalArgumentException("This person is not in address book");
     }
 

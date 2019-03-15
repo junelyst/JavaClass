@@ -1,4 +1,6 @@
 import org.junit.Test;
+import org.junit.jupiter.api.function.Executable;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -16,11 +18,11 @@ public class AddressBookTest {
         book.add("person1", address1);
         assertEquals(1, book.size());
 
-        try {
-            book.add("person1", address2);
-            fail("Expected exception was not occurred.");
-        }
-        catch (IllegalArgumentException ignored) {}
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() {
+                book.add("person1", address2);
+            }
+        });
     }
 
     @Test
@@ -36,11 +38,11 @@ public class AddressBookTest {
         AddressBook book = new AddressBook();
         book.add("person1", address1);
 
-        try {
-            book.remove("person2");
-            fail("Expected exception was not occurred.");
-        }
-        catch (IllegalArgumentException ignored) {}
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() {
+                book.remove("person2");
+            }
+        });
 
         book.remove("person1");
         assertEquals(0, book.size());
@@ -55,11 +57,11 @@ public class AddressBookTest {
         Address newAddress1 = book.getAddress("person1");
         assertEquals(address2, newAddress1);
 
-        try {
-            book.changeAddress("person12", address2);
-            fail("Expected exception was not occurred.");
-        }
-        catch (IllegalArgumentException ignored) {}
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() {
+                book.changeAddress("person12", address2);
+            }
+        });
     }
 
     @Test
@@ -71,11 +73,11 @@ public class AddressBookTest {
         Address getAddress2 = book.getAddress("person2");
         assertEquals(address2, getAddress2);
 
-        try {
-            book.getAddress("person12");
-            fail("Expected exception was not occurred.");
-        }
-        catch (IllegalArgumentException ignored) {}
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() {
+                book.getAddress("person12");
+            }
+        });
     }
 
     @Test
@@ -87,9 +89,8 @@ public class AddressBookTest {
         book.add("person4", address4);
 
         ArrayList<String> res1 = book.searchByStreet("street2");
-        assertTrue(res1.contains("person2"));
-        assertTrue(res1.contains("person3"));
-        assertEquals(2, res1.size());
+        Collections.sort(res1);
+        assertEquals(Arrays.asList("person2", "person3"), res1);
 
         ArrayList<String> res2 = book.searchByStreet("street12");
         assertEquals(0, res2.size());
@@ -104,13 +105,11 @@ public class AddressBookTest {
         book.add("person4", address4);
 
         ArrayList<String> res1 = book.searchByHouse("street2", "11");
-        assertTrue(res1.contains("person2"));
-        assertTrue(res1.contains("person3"));
-        assertEquals(2, res1.size());
+        Collections.sort(res1);
+        assertEquals(Arrays.asList("person2", "person3"), res1);
 
         ArrayList<String> res2 = book.searchByHouse("street1", "14");
-        assertTrue(res2.contains("person1"));
-        assertEquals(1, res2.size());
+        assertEquals(Collections.singletonList("person1"), res2);
 
         ArrayList<String> res3 = book.searchByHouse("street1", "50");
         assertEquals(0, res3.size());
