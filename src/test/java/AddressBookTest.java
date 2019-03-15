@@ -5,16 +5,22 @@ import static org.junit.Assert.*;
 
 public class AddressBookTest {
 
-    private AddressBook.Address address1 = new AddressBook.Address("street1", "14", "25");
-    private AddressBook.Address address2 = new AddressBook.Address("street2", "11", "18");
-    private AddressBook.Address address3 = new AddressBook.Address("street2", "11", "44");
-    private AddressBook.Address address4 = new AddressBook.Address("street3", "14", "44");
+    private Address address1 = new Address("street1", "14", "25");
+    private Address address2 = new Address("street2", "11", "18");
+    private Address address3 = new Address("street2", "11", "44");
+    private Address address4 = new Address("street3", "14", "44");
 
     @Test
     public void add() {
         AddressBook book = new AddressBook();
         book.add("person1", address1);
-        assertSame(1, book.size());
+        assertEquals(1, book.size());
+
+        try {
+            book.add("person1", address2);
+            fail("Expected exception was not occurred.");
+        }
+        catch (IllegalArgumentException ignored) {}
     }
 
     @Test
@@ -22,7 +28,7 @@ public class AddressBookTest {
         AddressBook book = new AddressBook();
         book.add("person1", address1);
         book.add("person2", address2);
-        assertSame(2, book.size());
+        assertEquals(2, book.size());
     }
 
     @Test
@@ -30,11 +36,14 @@ public class AddressBookTest {
         AddressBook book = new AddressBook();
         book.add("person1", address1);
 
-        book.remove("person2");
-        assertSame(1, book.size());
+        try {
+            book.remove("person2");
+            fail("Expected exception was not occurred.");
+        }
+        catch (IllegalArgumentException ignored) {}
 
         book.remove("person1");
-        assertSame(0, book.size());
+        assertEquals(0, book.size());
     }
 
     @Test
@@ -43,15 +52,14 @@ public class AddressBookTest {
         book.add("person1", address1);
 
         book.changeAddress("person1", address2);
-        ArrayList<String> newAddress1 = book.getAddress("person1");
-        assertSame("street2", newAddress1.get(0));
-        assertSame("11", newAddress1.get(1));
-        assertSame("18", newAddress1.get(2));
-        assertSame(3, newAddress1.size());
+        Address newAddress1 = book.getAddress("person1");
+        assertEquals(address2, newAddress1);
 
-        book.changeAddress("person12", address2);
-        ArrayList<String> newAddress2 = book.getAddress("person12");
-        assertSame(0, newAddress2.size());
+        try {
+            book.changeAddress("person12", address2);
+            fail("Expected exception was not occurred.");
+        }
+        catch (IllegalArgumentException ignored) {}
     }
 
     @Test
@@ -60,14 +68,14 @@ public class AddressBookTest {
 
         book.add("person1", address1);
         book.add("person2", address2);
-        ArrayList<String> list1 = book.getAddress("person1");
-        assertSame("street1", list1.get(0));
-        assertSame("14", list1.get(1));
-        assertSame("25", list1.get(2));
-        assertSame(3, list1.size());
+        Address getAddress2 = book.getAddress("person2");
+        assertEquals(address2, getAddress2);
 
-        ArrayList<String> list = book.getAddress("person3");
-        assertSame(0, list.size());
+        try {
+            book.getAddress("person12");
+            fail("Expected exception was not occurred.");
+        }
+        catch (IllegalArgumentException ignored) {}
     }
 
     @Test
@@ -79,10 +87,12 @@ public class AddressBookTest {
         book.add("person4", address4);
 
         ArrayList<String> res1 = book.searchByStreet("street2");
-        assertSame(2, res1.size());
+        assertTrue(res1.contains("person2"));
+        assertTrue(res1.contains("person3"));
+        assertEquals(2, res1.size());
 
         ArrayList<String> res2 = book.searchByStreet("street12");
-        assertSame(0, res2.size());
+        assertEquals(0, res2.size());
     }
 
     @Test
@@ -94,9 +104,15 @@ public class AddressBookTest {
         book.add("person4", address4);
 
         ArrayList<String> res1 = book.searchByHouse("street2", "11");
-        assertSame(2, res1.size());
+        assertTrue(res1.contains("person2"));
+        assertTrue(res1.contains("person3"));
+        assertEquals(2, res1.size());
 
         ArrayList<String> res2 = book.searchByHouse("street1", "14");
-        assertSame(1, res2.size());
+        assertTrue(res2.contains("person1"));
+        assertEquals(1, res2.size());
+
+        ArrayList<String> res3 = book.searchByHouse("street1", "50");
+        assertEquals(0, res3.size());
     }
 }

@@ -2,22 +2,14 @@ import java.util.*;
 
 public final class AddressBook {
     private HashMap<String, Address> book = new HashMap<>();
-    static class Address {
-        String street;
-        String house;
-        String flat;
-
-        Address(String street, String house, String flat) {
-            this.street = street;
-            this.house = house;
-            this.flat = flat;
-        }
-    }
 
     public void add(String person, Address address) {
         if (address.street.matches("[^\\p{Punct}]+") && (address.house.matches("\\d+"))
-                && (address.flat.matches("\\d+")))
-        book.put(person, address);
+                && (address.flat.matches("\\d+"))) {
+            if (book.containsKey(person))
+                throw new IllegalArgumentException("This person is already in address book");
+            else book.put(person, address);
+        }
     }
 
     public int size() {
@@ -25,25 +17,21 @@ public final class AddressBook {
     }
 
     public void remove(String person) {
+        if (book.containsKey(person))
         book.remove(person);
+        else throw new IllegalArgumentException("This person is not in address book");
     }
 
     public void changeAddress(String person, Address newAddress) {
+        if (book.containsKey(person))
         book.replace(person, newAddress);
+        else throw new IllegalArgumentException("This person is not in address book");
     }
 
-    public ArrayList<String> getAddress(String person) {
-        ArrayList<String> list = new ArrayList<>();
-        try {
-            Address address = book.get(person);
-            list.add(address.street);
-            list.add(address.house);
-            list.add(address.flat);
-            return list;
-        }
-        catch (NullPointerException e) {
-            return list;
-        }
+    public Address getAddress(String person) {
+        if (book.containsKey(person))
+            return book.get(person);
+        else throw new IllegalArgumentException("This person is not in address book");
     }
 
     public ArrayList<String> searchByStreet(String street) {
